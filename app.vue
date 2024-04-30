@@ -2,9 +2,9 @@
   <title>crawler</title>
   <UCard class="min-h-screen">
 
-    <UForm class="flex flex-col items-center min-w-full" @submit="submit" :state="formState">
+    <UForm class="flex flex-col min-w-full" @submit="submit" :state="formState">
       <UButtonGroup size="xl">
-        <UInput placeholder="Enter a URL" v-model="formState.url" :disabled="state == STATE.RUNNING"/>
+        <UInput class="min-w-96" placeholder="Enter a URL" v-model="formState.url" :disabled="state == STATE.RUNNING"/>
         <UButton type="submit" label="Crawl" :loading="state == STATE.RUNNING"/>
       </UButtonGroup>
     </UForm>
