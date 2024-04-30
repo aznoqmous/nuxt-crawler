@@ -1,14 +1,12 @@
 <template>
   <title>crawler</title>
   <UCard class="min-h-screen">
-
     <UForm class="flex flex-col min-w-full" @submit="submit" :state="formState">
       <UButtonGroup size="xl">
         <UInput class="min-w-96" placeholder="Enter a URL" v-model="formState.url" :disabled="state == STATE.RUNNING"/>
         <UButton type="submit" label="Crawl" :loading="state == STATE.RUNNING"/>
       </UButtonGroup>
     </UForm>
-
     <UCard class="mt-5" v-if="origin" style="background: linear-gradient(to bottom, var(--color, transparent), transparent)">
       <div class="flex gap-5">
         <figure v-if="ogImage" style="width: 10rem; aspect-ratio: 1; position: relative;">
@@ -22,13 +20,11 @@
       </div>
       <div class="flex gap-4 mt-2">
         <div v-for="(count, code) in statuses" :key="code">
-          
           <UBadge size="xs" variant="soft" :color="statusColors[`${code}`[0]]">
             <strong class="text-slate-200">{{ count }} &nbsp;</strong> {{ code }}
           </UBadge>
         </div> 
       </div>
-      
       <div v-if="state == STATE.RUNNING">
         <small class="block text-slate-400 translate-y-5">Crawling {{ current }} ...</small>
         <UProgress 
@@ -73,7 +69,17 @@
         </div>
       </template>
     </UTable>
+
+    <div class="flex mt-4" v-if="selected.length">
+      <UButton @click="copySelected">Copy selected</UButton>
+      <UModal v-model="modalOpened">
+        <UCard class="min-h-96">
+          <textarea class="bg-transparent min-h-full min-w-full" @click="(e)=> e.target.select()" @focus="(e)=> e.target.select()">{{ modalContent }}</textarea>
+        </UCard>
+      </UModal>
+    </div>
   </UCard>
+
   <USlideover v-model="isOpen">
     <div v-if="slideOverPage && slideOverSources" class="p-4">
       <h2 class="text-primary font-bold">{{ slideOverPage.url }}</h2>
@@ -88,6 +94,7 @@
       </UTable>
     </div>
   </USlideover>
+
 </template>
 <script setup>
 import ImageColor from "~/src/ImageColor"
@@ -168,6 +175,8 @@ const maxSourcesCount = ref(0)
 const isOpen = ref(false)
 const slideOverPage = ref(null)
 const slideOverSources = ref([])
+const modalOpened = ref(false)
+const modalContent = ref("")
 
 const STATE = { 
   IDLE: "idle",
@@ -392,5 +401,9 @@ const showSources = (page)=>{
   slideOverSources.value = Object.values(weightedSources)
   console.log(weightedSources)
   isOpen.value = true
+}
+const copySelected = ()=>{
+  modalOpened.value = true
+  modalContent.value = selected.value.map(page => page.url).join("\n")
 }
 </script>
